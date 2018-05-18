@@ -17,7 +17,7 @@ mongo = PyMongo(app)
 #Store information about australia using meetup api
 @app.route('/meetup/',methods=['GET'])
 def storeMeetup():
-
+    '''
     storeToMongodb("https://api.meetup.com/2/cities?sign=true&photo-host=public&key=37357c27353310f2d4f417f855721","cities")
     storeToMongodb("https://api.meetup.com/2/categories?sign=true&photo-host=public&key=37357c27353310f2d4f417f855721","categories")
     storeToMongodb("https://api.meetup.com/2/groups?sign=true&photo-host=public&country=au&key=37357c27353310f2d4f417f855721&city=Sydney","groups")
@@ -31,11 +31,10 @@ def storeMeetup():
         storeToMongodb("https://api.meetup.com/2/members?sign=true&photo-host=public&key=37357c27353310f2d4f417f855721&group_id="+str(item["id"]),"members")
     storeToMongodb("https://api.meetup.com/find/venues?&sign=true&photo-host=public&key=37357c27353310f2d4f417f855721&text=Australia&location=Sydney", "venues")
     '''
-    
+
     storeToMongodb(
-        "https://api.meetup.com/find/upcoming_events?sign=true&photo-host=public&key=37357c27353310f2d4f417f855721&lon=151.2100067138672&lat=-33.869998931884766",
-        "events_second")
-    '''
+        "https://api.meetup.com/2/open_events?sign=true&photo-host=public&key=37357c27353310f2d4f417f855721&lon=151.2100067138672&lat=-33.869998931884766",
+        "open_events")
     return "hhd"
 
 #Store information about australia's bus stop using https://opendata.transport.nsw.gov.au/node/
@@ -62,8 +61,11 @@ def storeToMongodb(url,collection_name):
     except:
         return
 
-    if collection_name == "events_second":
-        save_information(data)
+    if collection_name == "events" or collection_name == "open_events":
+        if collection_name=="events":
+            save_information(data,"events")
+        else:
+            save_information(data, "results")
         return
 
     with app.app_context():
