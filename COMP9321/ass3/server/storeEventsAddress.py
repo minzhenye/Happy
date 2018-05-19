@@ -125,3 +125,13 @@ def save_information(data,attr):
                                                       item["group"]["group_lon"]), item["event_url"], None))
     e = EventAddress(event_list)
     e.save()
+
+'''
+def save_Bus(data,lat,lon):
+    connect(host='mongodb://admin:admin@ds119650.mlab.com:19650/ass3db')
+    busInfo_list = []
+    for item in data["locations"]:
+        busInfo_list.append(BusInfo(item["id"],item["name"],item["type"],item["coord"],item["parent"],item["properties"]))
+    Bus(lat,lon,busInfo_list).save()
+
+'''

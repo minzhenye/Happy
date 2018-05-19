@@ -30,34 +30,55 @@ def storeMeetup():
         #for item_per_country in item["results"]:
         storeToMongodb("https://api.meetup.com/2/members?sign=true&photo-host=public&key=37357c27353310f2d4f417f855721&group_id="+str(item["id"]),"members")
     storeToMongodb("https://api.meetup.com/find/venues?&sign=true&photo-host=public&key=37357c27353310f2d4f417f855721&text=Australia&location=Sydney", "venues")
-    '''
+
 
     storeToMongodb(
         "https://api.meetup.com/2/open_events?sign=true&photo-host=public&key=37357c27353310f2d4f417f855721&lon=151.2100067138672&lat=-33.869998931884766",
         "open_events")
+    '''
+
+
     return "hhd"
 
 #Store information about australia's bus stop using https://opendata.transport.nsw.gov.au/node/
 @app.route('/bus/',methods=['GET'])
 def storeBusInfo():
-
     for item in mongo.db.venues.find():
         #url="https://api.transport.nsw.gov.au/v1/tp/coord?outputFormat=rapidJSON&coord=151.209778%3A-33.871082%3AEPSG%3A4326&coordOutputFormat=EPSG%3A4326&inclFilter=1&type_1=BUS_POINT&radius_1=1000&PoisOnMapMacro=true&version=10.2.1.42"
+
+        lat = item["lat"]
+        lon = item["lon"]
         url = "https://api.transport.nsw.gov.au/v1/tp/coord?outputFormat=rapidJSON&coord="+str(item["lon"])+"%3A"+str(item["lat"])+"%3AEPSG%3A4326&coordOutputFormat=EPSG%3A4326&inclFilter=1&type_1=BUS_POINT&radius_1=1000&PoisOnMapMacro=true&version=10.2.1.42"
 
-        storeToMongodb(url,"busInfo")
+        #storeToMongodb(url,"busInfo")
+        storeBusMongodb(url,lat,lon)
 
     return "hhd"
+
+def storeBusMongodb(url, lat,lon):
+    data = requests.get(url, headers={"Authorization": "apikey 5KkTkqJFDX4PARiheh73aiEEQ7LyrJxyURVV"}).json()
+    data.update({"lat":lat})
+    data.update({"lon": lon})
+
+    collection_name="busStop"
+    if collection_name not in mongo.db.collection_names():
+        collection = mongo.db.create_collection(collection_name)
+        if (data != []):
+            collection.insert(data)
+    else:
+        if (data != []):
+            mongo.db[collection_name].insert(data)
+    
+
+    #save_Bus(data,lat,lon)
+
+    return
 
 # store the data to mongodb
 def storeToMongodb(url,collection_name):
 
     try:
-        if collection_name=="busInfo":
-            data = requests.get(url,headers={"Authorization":"apikey 5KkTkqJFDX4PARiheh73aiEEQ7LyrJxyURVV"}).json()
-        else:
-            data = requests.get(url).json()
-
+        data = requests.get(url).json()
     except:
         return
 
@@ -67,6 +88,7 @@ def storeToMongodb(url,collection_name):
         else:
             save_information(data, "results")
         return
+
 
     with app.app_context():
         if collection_name not in mongo.db.collection_names():
