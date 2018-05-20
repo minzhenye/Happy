@@ -1,6 +1,8 @@
+
 from flask import Blueprint, render_template, request
 from user.models import User
 from user.forms import RegistrationForm
+
 
 user_page = Blueprint('user_page',__name__)
 
@@ -16,6 +18,6 @@ def login():
 def signup():
     form = RegistrationForm(request.form)
     if request.method == 'POST' and form.validate():
-        return '[] signup'.format(form.name.data)
+        return '{} signup'.format(form.name.data)
 
     return render_template('user/signup.html', form =form)
