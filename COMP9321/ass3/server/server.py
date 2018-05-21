@@ -28,3 +28,22 @@ def events(location):
     if len(return_list) != 0:
         return jsonify(return_list)
     return "No Event In That location"
+
+
+@server.route('/events/bus',methods=['GET'])
+def get_stops():
+    parser = reqparse.RequestParser()
+    parser.add_argument('lat',type=str)
+    parser.add_argument('lon',type=str)
+    args = parser.parse_args()
+    lat = args.get('lat')
+    lon = args.get('lon')
+    bus =mongo.db.bus.find()
+    for b in bus:
+
+        bus_lat = b['lat']
+        bus_lon = b['lon']
+        if lat == bus_lat and lon == bus_lon:
+            return jsonify(b["busInfo_list"])
+    return "No Bus station Around"
+

@@ -20,6 +20,20 @@
             Sign up
         </h3>
 
+        {% from "_formhelper.html" import render_field %}
+
+        <form method ="POST" action = "{{ url_for('user_page.signup') }}">
+            {{ form.csrf_token }}
+            {{ render_field(form.name, class="form-control", placeholder="Enter your name,eg zeshi") }}
+            {{ render_field(form.email, class="form-control") }}
+            {{ render_field(form.password, class="form-control") }}
+            {{ render_field(form.confirm, class="form-control") }}
+
+            <button type="submit" class="btn btn-success">
+               Sign Up
+           </button>
+
+        </form>
 
     </div>
 </div>
