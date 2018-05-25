@@ -78,7 +78,8 @@ var data = markersDataRight.substring(1,markersDataRight.length -1);
 
 var dd = eval('('+data+')');
 var gmarkers = [];
-
+var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+var labelIndex = 0;
 
 function initialize(setMap) {
 
@@ -117,8 +118,11 @@ function initialize(setMap) {
 	   infoWindowRight = new google.maps.InfoWindow();
 
 	   // Event that closes the Info Window with a click on the map
-	   google.maps.event.addListener(mapRight, 'click', function() {
+	   google.maps.event.addListener(mapRight, 'click', function(event) {
+	       addMarker(event.latLng, mapRight);
+	       post_location(event.latLng)
 	      infoWindowRight.close();
+
    	});
    }
 
@@ -299,6 +303,7 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
 
       // opening the Info Window in the current map and at the current marker location.
       infoWindow.open(map, marker);
+      post_location(marker.position);
    });
 
 }
@@ -341,6 +346,41 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
 
 
       }
+       // Adds a marker to the map.
+      function addMarker(location, map) {
+        // Add the marker at the clicked location, and add the next-available label
+        // from the array of alphabetical characters.
+        var marker = new google.maps.Marker({
+          position: location,
+          label: labels[labelIndex++ % labels.length],
+          map: map
+        });
+      }
+      function post_location(latlng)
+    {
+        alert("posting")
+        const url = 'http://127.0.0.1:5000/event/explore/bus';
+        fetch(url, {
+            method: 'POST',
+            body: JSON.stringify({
+                latlng: latlng
+            }),
+            headers: {'Content-Type' : 'application/json'}
+        }).then(function(res){
+
+
+            alert(typeof(res));
+
+            var resOne= JSON.stringify(res['location']);
+            alert(resOne);
+
+
+            console.log((response));
+
+        });
+
+        alert("ending")
+    }
 
 </script>
 

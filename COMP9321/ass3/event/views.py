@@ -1,13 +1,15 @@
 from flask import Blueprint,render_template,request,session,redirect,url_for,abort,flash
 from event.forms import BasicEventForm, EditForm,CancelEventForm
 from user.decorator import login_required
-
+from flask_restful import reqparse
 from  event.models import Event
 from user.models import User
 from utilities.storage import upload_image_file
 import json
 import bson
 from application import mongo
+from flask import jsonify
+import math
 
 event_page = Blueprint('event_page',__name__)
 
@@ -159,3 +161,49 @@ def explore(page=1):
       # return_list = str(return_list)
       return render_template("meetup/explore.html", party_json= json.dumps(return_list),display_party = return_list)
   return "No Event In That Location"
+
+def rad(x):
+    return x * math.pi / 180;
+
+def getDistance(p1lat,p1lng,p2lat,p2lng):
+    R = 6378137
+    dLat = rad(p2lat - p1lat)
+    dLong = rad(p2lng - p1lng)
+    a = math.sin(dLat / 2) * math.sin(dLat / 2) +\
+        math.cos(rad(p1lat)) * math.cos(rad(p2lat)) *\
+        math.sin(dLong / 2) * math.sin(dLong / 2)
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    d = R * c
+    return d
+
+
+@event_page.route('/explore/bus',methods=['POST'])
+def get_stops():
+    parser = reqparse.RequestParser()
+    parser.add_argument('latlng',type=dict)
+    # parser.add_argument('lon',type=str)
+    args = parser.parse_args()
+    latlng = args.get('latlng')
+    print(type(latlng))
+
+
+    lat = latlng['lat']
+    lng = latlng['lng']
+
+    bus = mongo.db.busStop.find()
+    print(bus)
+    buses=[]
+    for b in bus:
+
+        bus_lat = b['lat']
+        # print(bus_lat)
+        bus_lng = b['lon']
+        distance = getDistance(lat,lng,bus_lat,bus_lng)
+        print(distance)
+        if distance <= 5000:
+            # buses.append(b)
+            print(b["locations"])
+            return jsonify(location=b["locations"])
+
+    return "No Bus station Around"
+
