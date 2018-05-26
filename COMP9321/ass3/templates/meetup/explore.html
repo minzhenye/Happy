@@ -19,7 +19,15 @@
 
 
                   <div id = 'side_bar'>  Search place in the above box</div>
-                <div id = 'businfo'> buses </div>
+                <!--<div id = 'businfo'> buses </div>-->
+
+
+          </div>
+       <h1 class="jumbotron-heading" >
+                Bus Info:
+              </h1>
+       <div id='businfo' > bus info
+
 
 
           </div>
@@ -325,9 +333,17 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
 
 
         google.maps.event.trigger(gmarkers[i],"click");
+//        google.maps.event.trigger(busMarker[i],"click");
 
 
       }
+      function myclick1(i) {
+
+        google.maps.event.trigger(busMarker[i],"click");
+
+
+      }
+
       function makeSidebar() {
           var html = "";
 
@@ -343,15 +359,19 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
           document.getElementById("side_bar").innerHTML = html;
       }
       function makebussidebar(){
+//        document.getElementById("businfo").innerHTML="shit";
         var bushtml = "";
 
         for (var i=0; i<busMarker.length; i++) {
           if (busMarker[i].getVisible()) {
-            bushtml += '<a href="javascript:myclick(' + i + ')" id="marker"+i>' + busMarker[i].label + '<\/a><br>';
+//              document.write(busMarker[i].title);
+            bushtml += '<a href="javascript:myclick1(' + i + ')" id="marker"+i>' + busMarker[i].title  + '<\/a><br>';
+
             var card_map_new='card_map'+i;
 
           }
         }
+
         document.getElementById("businfo").innerHTML = bushtml;
 
       }
@@ -378,7 +398,7 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
 
       function post_location(latlng,map)
     {
-        alert("posting")
+//        alert("posting")
 
         const url = 'http://127.0.0.1:5000/event/explore/bus';
         fetch(url, {
@@ -391,13 +411,14 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
         .then(function(res,map){
 
 
-            alert(typeof(res));
-            alert(res['location'][0]['coord'][0]);
-            alert(res['location'][0]['coord'][1]);
+//            alert(typeof(res));
+//            alert(res['location'][0]['coord'][0]);
+//            alert(res['location'][0]['coord'][1]);
 
             var resOne= JSON.stringify(res);
-            alert(resOne);
-
+//            alert(resOne);
+            busMarker = [];
+            var infoWindow=infoWindowRight;
             for(var i=0;i<=res['location'].length;i++) {
                 if (res['location'][i]['properties']['distance'] <=200) {
 
@@ -409,6 +430,8 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
                         map: mapRight,
                         position: blatlng,
                         label: labels[labelIndex++ % labels.length],
+                        //title: 'ID: '+res['location'][i]['id'] +'Name: '+res['location'][i]['name']+'<br/>'+'Type: '+res['location'][i]['type']+'<br/>'+'Distance: '+res['location'][i]['properties']['distance']+'<br/>',
+                        title: res['location'][i]['name'],
                         icon: 'https://maps.google.com/mapfiles/kml/shapes/parking_lot_maps.png',
                         draggable: true,
 
@@ -418,6 +441,17 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
 
 
                     });
+//
+                    bmarker.addListener('click',function () {
+                        var iwContent = "ID: "+res['location'][i] res['location'][i][]+"<br/>"+\
+                                    Name: "+res['location'][i]['name']+'<br/>'+\
+                                    "Type: "+res['location'][i]['type']+'<br/>'\
+                        +"";
+//                        mapRight.setZoom(8);
+                         infoWindow.setContent(iwContent);
+                         infoWindow.open(mapRight, bmarker);
+                    })
+
                 }
                 busMarker.push(bmarker);
                 makebussidebar();

@@ -97,13 +97,13 @@ def cancel(id):
 @event_page.route('/<id>',methods=['GET'])
 def public(id):
     event  = mongo.db.event_address.find()[2]
-    print(id)
+    # print(id)
     return_list =[]
     for e in event['event_list']:
         if str(e['id']) == id:
             return_list.append(e)
-    print("here")
-    print(return_list)
+    # print("here")
+    # print(return_list)
     if len(return_list) != 0:
 
         return render_template('meetup/public.html',event = return_list)
@@ -127,7 +127,7 @@ def public(id):
 def explore(page=1):
 
   a =request.args
-  print(a)
+  # print(a)
   # location = request.args.get('place').lower() #encoding error
   location = request.args.get('location','').lower()
   # place = request.args.get('place','').lower()
@@ -144,7 +144,7 @@ def explore(page=1):
 
   return_list = []
   # print(place)
-  print(location)
+  # print(location)
   if not location :
       return render_template("meetup/explore.html",party_json= json.dumps(return_list),display_party = return_list)
 
@@ -154,7 +154,7 @@ def explore(page=1):
           if location in address:
               return_list.append(e)
   if len(return_list) != 0:
-      print(return_list)
+      # print(return_list)
       # i =  5
       # list = return_list[i,i+5]
       # pagination = Pagination(page=page, per_page=5, total=len(return_list),  record_name='List')
@@ -184,26 +184,37 @@ def get_stops():
     # parser.add_argument('lon',type=str)
     args = parser.parse_args()
     latlng = args.get('latlng')
-    print(latlng)
+    # print(latlng)
 
 
     lat = latlng['lat']
     lng = latlng['lng']
 
-    bus = mongo.db.busStop.find()
-    print(bus)
+    bus = mongo.db.bus.find()
+    # print(bus)
     buses=[]
+    # count =0
     for b in bus:
-
+        # count = count+1
         bus_lat = b['lat']
         # print(bus_lat)
         bus_lng = b['lon']
         distance = getDistance(lat,lng,bus_lat,bus_lng)
-        print(distance)
-        if distance <= 300:
-            # buses.append(b)
-            print(jsonify(b["locations"]))
-            return jsonify(location=b["locations"])
+        # print(bus_lat,bus_lng)
+        # print(lat,lng)
+        # print(count)
+
+
+        #
+        if distance <= 100:
+            print(distance)
+            buses.append((b,distance))
+            # print(jsonify(b["locations"]))
+    mindis = sorted(buses, key=lambda x: x[1])[0][0]
+    # print(mindis)
+
+
+    return jsonify(location=mindis["locations"])
 
     return "No Bus station Around"
 
