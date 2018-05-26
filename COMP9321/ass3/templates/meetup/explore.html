@@ -19,6 +19,7 @@
 
 
                   <div id = 'side_bar'>  Search place in the above box</div>
+                <div id = 'businfo'> buses </div>
 
 
           </div>
@@ -81,8 +82,11 @@ var gmarkers = [];
 var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 var labelIndex = 0;
 
-function initialize(setMap) {
+var busMarker =[];
 
+
+function initialize(setMap) {
+    busMarker = []
     gmarkers = [];
    var mapOptions;
 
@@ -120,7 +124,7 @@ function initialize(setMap) {
 	   // Event that closes the Info Window with a click on the map
 	   google.maps.event.addListener(mapRight, 'click', function(event) {
 	       addMarker(event.latLng, mapRight);
-	       post_location(event.latLng)
+	       post_location(event.latLng,mapRight);
 	      infoWindowRight.close();
 
    	});
@@ -322,18 +326,33 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
 
         google.maps.event.trigger(gmarkers[i],"click");
 
+
       }
       function makeSidebar() {
-        var html = "";
-        for (var i=0; i<gmarkers.length; i++) {
-          if (gmarkers[i].getVisible()) {
-            html += '<a href="javascript:myclick(' + i + ')" id="marker"+i>' + gmarkers[i].title + '<\/a><br>';
+          var html = "";
+
+          for (var i = 0; i < gmarkers.length; i++) {
+              if (gmarkers[i].getVisible()) {
+                  html += '<a href="javascript:myclick(' + i + ')" id="marker"+i>' + gmarkers[i].title + '<\/a><br>';
+                  var card_map_new = 'card_map' + i;
+
+              }
+          }
+
+
+          document.getElementById("side_bar").innerHTML = html;
+      }
+      function makebussidebar(){
+        var bushtml = "";
+
+        for (var i=0; i<busMarker.length; i++) {
+          if (busMarker[i].getVisible()) {
+            bushtml += '<a href="javascript:myclick(' + i + ')" id="marker"+i>' + busMarker[i].label + '<\/a><br>';
             var card_map_new='card_map'+i;
 
           }
         }
-
-        document.getElementById("side_bar").innerHTML = html;
+        document.getElementById("businfo").innerHTML = bushtml;
 
       }
 
@@ -356,30 +375,74 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
           map: map
         });
       }
-      function post_location(latlng)
+
+      function post_location(latlng,map)
     {
         alert("posting")
+
         const url = 'http://127.0.0.1:5000/event/explore/bus';
         fetch(url, {
             method: 'POST',
             body: JSON.stringify({
                 latlng: latlng
             }),
-            headers: {'Content-Type' : 'application/json'}
-        }).then(function(res){
+            headers: {'Content-Type': 'application/json'}
+        }).then((res)=>res.json())
+        .then(function(res,map){
 
 
             alert(typeof(res));
+            alert(res['location'][0]['coord'][0]);
+            alert(res['location'][0]['coord'][1]);
 
-            var resOne= JSON.stringify(res['location']);
+            var resOne= JSON.stringify(res);
             alert(resOne);
 
+            for(var i=0;i<=res['location'].length;i++) {
+                if (res['location'][i]['properties']['distance'] <=200) {
 
-            console.log((response));
+
+                    var blatlng = new google.maps.LatLng(res['location'][i]['coord'][0], res['location'][i]['coord'][1]);
+                    // addMarker(blatlng,mapRight)
+
+                    var bmarker = new google.maps.Marker({
+                        map: mapRight,
+                        position: blatlng,
+                        label: labels[labelIndex++ % labels.length],
+                        icon: 'https://maps.google.com/mapfiles/kml/shapes/parking_lot_maps.png',
+                        draggable: true,
+
+
+                        animation: google.maps.Animation.DROP,
+                        //     icon :'http://205.166.161.233/MyRide/css/ico/bus_pointer.svg',
+
+
+                    });
+                }
+                busMarker.push(bmarker);
+                makebussidebar();
+
+            }
+
+            // var blatlng =new google.maps.LatLng(res['location'][0]['coord'][0],res['location'][0]['coord'][1]);
+            // var bmarker = new google.maps.Marker({
+            //     map: mapRight,
+            //     position: blatlng,
+            //     label: labels[labelIndex++ % labels.length],
+            //     icon : 'https://maps.google.com/mapfiles/kml/shapes/parking_lot_maps.png',
+            //
+            //
+            // });
+            // alert(bmarker.label);
+
+
+
 
         });
 
-        alert("ending")
+        // alert("ending")
+        // var tmp = new google.maps.LatLng(-33.91643,151.21050000000002);
+        // addMarker(tmp,mapRight);
     }
 
 </script>

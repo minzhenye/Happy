@@ -184,7 +184,7 @@ def get_stops():
     # parser.add_argument('lon',type=str)
     args = parser.parse_args()
     latlng = args.get('latlng')
-    print(type(latlng))
+    print(latlng)
 
 
     lat = latlng['lat']
@@ -200,9 +200,9 @@ def get_stops():
         bus_lng = b['lon']
         distance = getDistance(lat,lng,bus_lat,bus_lng)
         print(distance)
-        if distance <= 5000:
+        if distance <= 300:
             # buses.append(b)
-            print(b["locations"])
+            print(jsonify(b["locations"]))
             return jsonify(location=b["locations"])
 
     return "No Bus station Around"
