@@ -7,6 +7,7 @@ import csv
 from models import *
 from mongoengine import connect
 from storeEventsAddress import *
+import re
 app = Flask(__name__)
 
 
@@ -17,6 +18,7 @@ mongo = PyMongo(app)
 #Store information about australia using meetup api
 @app.route('/meetup/',methods=['GET'])
 def storeMeetup():
+    print("???????")
     '''
     storeToMongodb("https://api.meetup.com/2/cities?sign=true&photo-host=public&key=37357c27353310f2d4f417f855721","cities")
     storeToMongodb("https://api.meetup.com/2/categories?sign=true&photo-host=public&key=37357c27353310f2d4f417f855721","categories")
@@ -35,6 +37,7 @@ def storeMeetup():
     storeToMongodb(
         "https://api.meetup.com/2/open_events?sign=true&photo-host=public&key=37357c27353310f2d4f417f855721&lon=151.2100067138672&lat=-33.869998931884766",
         "open_events")
+
     '''
 
 
@@ -43,6 +46,7 @@ def storeMeetup():
 #Store information about australia's bus stop using https://opendata.transport.nsw.gov.au/node/
 @app.route('/bus/',methods=['GET'])
 def storeBusInfo():
+    '''
     for item in mongo.db.venues.find():
         #url="https://api.transport.nsw.gov.au/v1/tp/coord?outputFormat=rapidJSON&coord=151.209778%3A-33.871082%3AEPSG%3A4326&coordOutputFormat=EPSG%3A4326&inclFilter=1&type_1=BUS_POINT&radius_1=1000&PoisOnMapMacro=true&version=10.2.1.42"
 
@@ -52,6 +56,17 @@ def storeBusInfo():
 
         #storeToMongodb(url,"busInfo")
         storeBusMongodb(url,lat,lon)
+    '''
+    for item in mongo.db.event_address.find()[2]["event_list"]:
+        #url="https://api.transport.nsw.gov.au/v1/tp/coord?outputFormat=rapidJSON&coord=151.209778%3A-33.871082%3AEPSG%3A4326&coordOutputFormat=EPSG%3A4326&inclFilter=1&type_1=BUS_POINT&radius_1=1000&PoisOnMapMacro=true&version=10.2.1.42"
+        if "venue" in item.keys():
+            lat = item["venue"]["lat"]
+            lon = item["venue"]["lon"]
+            print(lat,lon)
+            url = "https://api.transport.nsw.gov.au/v1/tp/coord?outputFormat=rapidJSON&coord="+str(item["venue"]["lon"])+"%3A"+str(item["venue"]["lat"])+"%3AEPSG%3A4326&coordOutputFormat=EPSG%3A4326&inclFilter=1&type_1=BUS_POINT&radius_1=1000&PoisOnMapMacro=true&version=10.2.1.42"
+
+        #storeToMongodb(url,"busInfo")
+            storeBusMongodb(url,lat,lon)
 
     return "hhd"
 
@@ -60,7 +75,7 @@ def storeBusMongodb(url, lat,lon):
     data.update({"lat":lat})
     data.update({"lon": lon})
 
-    collection_name="busStop"
+    collection_name="bus"
     if collection_name not in mongo.db.collection_names():
         collection = mongo.db.create_collection(collection_name)
         if (data != []):
@@ -84,8 +99,29 @@ def storeToMongodb(url,collection_name):
 
     if collection_name == "events" or collection_name == "open_events":
         if collection_name=="events":
+
             save_information(data,"events")
         else:
+            mongo.db["open_events"].insert(data)
+
+            for item in data["results"]:
+                #print(item.keys())
+                if "description" in item.keys():
+                    item["description"] = item["description"].replace("<p>", "").replace("</p>", ".").replace("<br/>","").replace("</a>", "").replace("&amp;","&").replace("</a>","").replace("&gt;",">").replace("<b>", "").replace("</b>", "").replace("<i>", "").replace("</i>", "")
+
+                    if "<a" in item["description"]:
+                        subresult = re.findall('<a.*?>',item["description"])
+
+                        for subitem in subresult:
+                            item["description"] = item["description"].replace(subitem, " ")
+                    if "<img" in item["description"]:
+
+                        subresult = re.findall('<img.*?/>',item["description"])
+                        for subitem in subresult:
+                            item["description"] = item["description"].replace(subitem, " ")
+                else:
+                    print("-----------------------------------------")
+
             save_information(data, "results")
         return
 
