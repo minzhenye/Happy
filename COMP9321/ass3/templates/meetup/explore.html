@@ -408,7 +408,7 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
             }),
             headers: {'Content-Type': 'application/json'}
         }).then((res)=>res.json())
-        .then(function(res,map){
+          .then(function(res,map){
 
 
 //            alert(typeof(res));
@@ -418,8 +418,10 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
             var resOne= JSON.stringify(res);
 //            alert(resOne);
             busMarker = [];
-            var infoWindow=infoWindowRight;
+
             for(var i=0;i<=res['location'].length;i++) {
+                 var infoWindow=infoWindowRight;
+
                 if (res['location'][i]['properties']['distance'] <=200) {
 
 
@@ -441,22 +443,34 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
 
 
                     });
-//
-                    bmarker.addListener('click',function () {
-                        var iwContent = "ID: "+res['location'][i] res['location'][i][]+"<br/>"+\
-                                    Name: "+res['location'][i]['name']+'<br/>'+\
-                                    "Type: "+res['location'][i]['type']+'<br/>'\
-                        +"";
-//                        mapRight.setZoom(8);
+                    busMarker.push(bmarker);
+                    var name = res['location'][i]['name'];
+                    var id = res['location'][i]['properties']['STOPPOINT_GLOBAL_ID'];
+                    var type = res['location'][i]['type'];
+                    var distance = res['location'][i]['properties']['distance'];
+                    // bmarker.addListener('click',function () {
+                    //     var iwContent = "ID: "+id+"<br/>"+ "Name: "+name+'<br/>'+ "Type: "+type+'<br/>'+"Distance: "+distance+"<br/>";
+                    //      // mapRight.setZoom(8);
+                    //      infoWindow.setContent(iwContent);
+                    //      infoWindow.open(mapRight, bmarker);
+                    // })
+                    alert(id);
+                    google.maps.event.addListener(bmarker, 'click', function() {
+                        var iwContent = "ID: "+id+"<br/>"+ "Name: "+name+'<br/>'+ "Type: "+type+'<br/>'+"Distance: "+distance+"<br/>";
+                         // mapRight.setZoom(8);
+                        alert(iwContent);
                          infoWindow.setContent(iwContent);
                          infoWindow.open(mapRight, bmarker);
-                    })
+
+
+                    });
 
                 }
-                busMarker.push(bmarker);
+
                 makebussidebar();
 
             }
+
 
             // var blatlng =new google.maps.LatLng(res['location'][0]['coord'][0],res['location'][0]['coord'][1]);
             // var bmarker = new google.maps.Marker({
