@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %} Cancel EVENT {% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-md-6 offset-md-3">
+    <h3>
+      {{ event.name }}
+    </h3>
+
+    {% if event.party_photo %}
+    <img width="100%" src="{{event.party_photo}}">
+    {% else %}
+    <img width="100%" src="{{url_for('static',filename='img/event.JPG')}}">
+    {% endif %}
+
+
+
+    {% if error %}
+    <div class="alert alert-danger">
+        {{error}}
+    </div>
+    {% endif %}
+
+
+    {% from "_formhelper.html" import render_field %}
+    <form method="POST" action="{{url_for('event_page.cancel',id=event.id)}}">
+      {{ form.csrf_token }}
+      {{ render_field(form.confirm,class="form-control") }}
+
+      <button type="submit" class="btn btn-danger">
+        Cancel event
+      </button>
+
+     <a href="{{url_for('event_page.edit',id=event.id)}}">Back to Edit Event</a>
+
+    </form>
+
+
+
+  </div>
+</div>
+{% endblock %}
