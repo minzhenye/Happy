@@ -353,7 +353,7 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
 
           for (var i = 0; i < gmarkers.length; i++) {
               if (gmarkers[i].getVisible()) {
-                  html += '<a href="javascript:myclick(' + i + ')" id="marker"+i>' + gmarkers[i].title + '<\/a><br>';
+                  html += '<a href="javascript:myclick(' + i + ')" id="marker"+i>'+(i+1)+": " + gmarkers[i].title + '<\/a><br>';
                   var card_map_new = 'card_map' + i;
 
               }
@@ -366,12 +366,12 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
 //        document.getElementById("businfo").innerHTML="shit";
 
         var bushtml = "";
-        bushtml += '<a href="javascript:closestbus()" id="marker"+i>' + "Get Closest Bus Stop Here"  + '<\/a><br>';
+        bushtml += '<a href="javascript:closestbus()" id="marker"+i>' + "<strong>"+"Get Closest Bus Stop Here" + "</strong>" + '<\/a><br>';
         for (var i=0; i<busMarker.length; i++) {
 
           if (busMarker[i].getVisible()) {
 //              document.write(busMarker[i].title);
-            bushtml += '<a href="javascript:myclick1(' + i + ')" id="marker"+i>' + busMarker[i].title  + '<\/a><br>';
+            bushtml += '<a href="javascript:myclick1(' + i + ')" id="marker"+i>'+(i+1)+": " + busMarker[i].title  + '<\/a><br>';
 
             var card_map_new='card_map'+i;
 
@@ -383,7 +383,7 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
       }
 
       function closestbus(){
-      
+
           var min_dis = Number.MAX_SAFE_INTEGER;
           var min_marker = busMarker[0];
           for (var i=0; i<busMarker.length; i++) {
@@ -427,6 +427,7 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
         for (var i = 0; i < busMarker.length; i++ ) {
             if (busMarker[i] == min_marker) {
                 busMarker[i].setVisible(true);
+                google.maps.event.trigger(busMarker[i],"click");
             }
           }
 
