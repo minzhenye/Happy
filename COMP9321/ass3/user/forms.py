@@ -14,7 +14,7 @@ class BaseUserForm(FlaskForm):
 class EditForm(BaseUserForm):
     image = FileField("Profile image",
                       validators=[FileAllowed(['jpg', 'jpeg', 'png', 'gif', 'bmp'], "Only allow .jpg .png files")])
-    bio = StringField("Bio", widget= TextArea(),
+    bio = StringField("Destription", widget= TextArea(),
                       validators=[validators.Length(max=200)])
 
 

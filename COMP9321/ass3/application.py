@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask,redirect,url_for
 from flask_mongoengine import MongoEngine
 from flask_pymongo import PyMongo
 
@@ -17,7 +17,7 @@ def create_app(config= None):
 
     @app.route("/")
     def hello():
-        return "home"
+        return redirect(url_for('event_page.explore'))
 
     from user.view import user_page
     app.register_blueprint(user_page,url_prefix ="/user")

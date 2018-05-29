@@ -57,8 +57,8 @@ def signup():
         user.save()
         flash("Registered successfully")
 
-        return '{} signup'.format(form.name.data)
-
+        #return '{} signup'.format(form.name.data)
+        return redirect(url_for('user_page.login'))
     return render_template('user/signup.html', form =form)
 
 
