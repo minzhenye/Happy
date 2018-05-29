@@ -315,6 +315,7 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
 
       // opening the Info Window in the current map and at the current marker location.
       infoWindow.open(map, marker);
+      clearOverlays();
       post_location(marker.position);
    });
 
@@ -427,43 +428,43 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
 
                     var blatlng = new google.maps.LatLng(res['location'][i]['coord'][0], res['location'][i]['coord'][1]);
                     // addMarker(blatlng,mapRight)
-
-                    var bmarker = new google.maps.Marker({
-                        map: mapRight,
-                        position: blatlng,
-                        label: labels[labelIndex++ % labels.length],
-                        //title: 'ID: '+res['location'][i]['id'] +'Name: '+res['location'][i]['name']+'<br/>'+'Type: '+res['location'][i]['type']+'<br/>'+'Distance: '+res['location'][i]['properties']['distance']+'<br/>',
-                        title: res['location'][i]['name'],
-                        icon: 'https://maps.google.com/mapfiles/kml/shapes/parking_lot_maps.png',
-                        draggable: true,
-
-
-                        animation: google.maps.Animation.DROP,
-                        //     icon :'http://205.166.161.233/MyRide/css/ico/bus_pointer.svg',
-
-
-                    });
-                    busMarker.push(bmarker);
-                    var name = res['location'][i]['name'];
-                    var id = res['location'][i]['properties']['STOPPOINT_GLOBAL_ID'];
-                    var type = res['location'][i]['type'];
-                    var distance = res['location'][i]['properties']['distance'];
-                    // bmarker.addListener('click',function () {
+                    createbusmarker(blatlng,res,i);
+                    // var bmarker = new google.maps.Marker({
+                    //     map: mapRight,
+                    //     position: blatlng,
+                    //     label: labels[labelIndex++ % labels.length],
+                    //     //title: 'ID: '+res['location'][i]['id'] +'Name: '+res['location'][i]['name']+'<br/>'+'Type: '+res['location'][i]['type']+'<br/>'+'Distance: '+res['location'][i]['properties']['distance']+'<br/>',
+                    //     title: res['location'][i]['name'],
+                    //     icon: 'https://maps.google.com/mapfiles/kml/shapes/parking_lot_maps.png',
+                    //     draggable: true,
+                    //
+                    //
+                    //     animation: google.maps.Animation.DROP,
+                    //     //     icon :'http://205.166.161.233/MyRide/css/ico/bus_pointer.svg',
+                    //
+                    //
+                    // });
+                    // busMarker.push(bmarker);
+                    // var name = res['location'][i]['name'];
+                    // var id = res['location'][i]['properties']['STOPPOINT_GLOBAL_ID'];
+                    // var type = res['location'][i]['type'];
+                    // var distance = res['location'][i]['properties']['distance'];
+                    // // bmarker.addListener('click',function () {
+                    // //     var iwContent = "ID: "+id+"<br/>"+ "Name: "+name+'<br/>'+ "Type: "+type+'<br/>'+"Distance: "+distance+"<br/>";
+                    // //      // mapRight.setZoom(8);
+                    // //      infoWindow.setContent(iwContent);
+                    // //      infoWindow.open(mapRight, bmarker);
+                    // // })
+                    // alert(id);
+                    // google.maps.event.addListener(bmarker, 'click', function() {
                     //     var iwContent = "ID: "+id+"<br/>"+ "Name: "+name+'<br/>'+ "Type: "+type+'<br/>'+"Distance: "+distance+"<br/>";
                     //      // mapRight.setZoom(8);
+                    //     alert(iwContent);
                     //      infoWindow.setContent(iwContent);
                     //      infoWindow.open(mapRight, bmarker);
-                    // })
-                    alert(id);
-                    google.maps.event.addListener(bmarker, 'click', function() {
-                        var iwContent = "ID: "+id+"<br/>"+ "Name: "+name+'<br/>'+ "Type: "+type+'<br/>'+"Distance: "+distance+"<br/>";
-                         // mapRight.setZoom(8);
-                        alert(iwContent);
-                         infoWindow.setContent(iwContent);
-                         infoWindow.open(mapRight, bmarker);
-
-
-                    });
+                    //
+                    //
+                    // });
 
                 }
 
@@ -492,6 +493,56 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
         // var tmp = new google.maps.LatLng(-33.91643,151.21050000000002);
         // addMarker(tmp,mapRight);
     }
+    
+    
+    function createbusmarker(blatlng,res,i) {
+    var infoWindow = infoWindowRight;
+        var bmarker = new google.maps.Marker({
+            map: mapRight,
+            position: blatlng,
+            label: labels[labelIndex++ % labels.length],
+            //title: 'ID: '+res['location'][i]['id'] +'Name: '+res['location'][i]['name']+'<br/>'+'Type: '+res['location'][i]['type']+'<br/>'+'Distance: '+res['location'][i]['properties']['distance']+'<br/>',
+            title: res['location'][i]['name'],
+            icon: 'https://maps.google.com/mapfiles/kml/shapes/parking_lot_maps.png',
+            draggable: true,
+
+
+            animation: google.maps.Animation.DROP,
+            //     icon :'http://205.166.161.233/MyRide/css/ico/bus_pointer.svg',
+
+
+        });
+        busMarker.push(bmarker);
+        var name = res['location'][i]['name'];
+        var id = res['location'][i]['properties']['STOPPOINT_GLOBAL_ID'];
+        var type = res['location'][i]['type'];
+        var distance = res['location'][i]['properties']['distance'];
+        // bmarker.addListener('click',function () {
+        //     var iwContent = "ID: "+id+"<br/>"+ "Name: "+name+'<br/>'+ "Type: "+type+'<br/>'+"Distance: "+distance+"<br/>";
+        //      // mapRight.setZoom(8);
+        //      infoWindow.setContent(iwContent);
+        //      infoWindow.open(mapRight, bmarker);
+        // })
+        // alert(id);
+        google.maps.event.addListener(bmarker, 'click', function() {
+            var iwContent = "ID: "+id+"<br/>"+ "Name: "+name+'<br/>'+ "Type: "+type+'<br/>'+"Distance: "+distance+"<br/>";
+             // mapRight.setZoom(8);
+            // alert(iwContent);
+             infoWindow.setContent(iwContent);
+             infoWindow.open(mapRight, bmarker);
+
+
+        });
+        
+    }
+    function clearOverlays() {
+      for (var i = 0; i < busMarker.length; i++ ) {
+        busMarker[i].setMap(null);
+      }
+      busMarker.length = 0;
+    }
+    
+    
 
 </script>
 
