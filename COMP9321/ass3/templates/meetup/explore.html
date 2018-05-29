@@ -40,7 +40,9 @@
               </h1>
             <br/>
             <!--<div id = "show_Weather"> show_weather</div>-->
-             <div id="show_Details" style="display:none;" > show_Details </div>
+                 <div class="card" style="width:40rem;">
+             <div id="show_Details" style="display:none;" class="card-body"> show_Details </div>
+        </div>
 
             <!--</div>-->
 
@@ -55,9 +57,17 @@
 
 
 
- <div id="map-canvas-right">a
+     <div id="canvas-right">
 
-</div>
+         <!--<div id = "canvas-right-top" style="display:none;"> weather-->
+
+         <!--</div>-->
+
+
+        <div id="map-canvas-right">a
+
+        </div>
+     </div>
 
 </div>
 
@@ -300,6 +310,8 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
        var lng=latlng.toString().substring(1,latlng.toString().length-2).split(",")[1].replace(/\s+/g,"");
 
       var weather = getWeather(lat,lng);
+//      document.getElementById("canvas-right-top").style.display="block";
+//      document.getElementById("canvas-right-top").innerHTML = weather;
 
       // Creating the content to be inserted in the infowindow
       var iwContent = '<div id="iw_container">' +
@@ -499,8 +511,8 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
         });
 
     }
-    
-    
+
+
     function createbusmarker(blatlng,res,i) {
     var infoWindow = infoWindowRight;
         var bmarker = new google.maps.Marker({
@@ -534,7 +546,7 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
 
 
         });
-        
+
     }
     function clearOverlays() {
       for (var i = 0; i < busMarker.length; i++ ) {
@@ -554,8 +566,8 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
 
 
     }
-    
-    
+
+
 
 </script>
 
