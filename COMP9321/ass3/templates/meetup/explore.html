@@ -91,10 +91,11 @@ var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 var labelIndex = 0;
 
 var busMarker =[];
-
-
+var busdistance =[];
+var closestBusMarker = [];
 function initialize(setMap) {
-    busMarker = []
+    busMarker = [];
+    busdistance =[];
     gmarkers = [];
    var mapOptions;
 
@@ -319,6 +320,7 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
       post_location(marker.position);
    });
 
+
 }
 
 
@@ -341,6 +343,7 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
       function myclick1(i) {
 
         google.maps.event.trigger(busMarker[i],"click");
+        busMarker[i].setVisible(true);
 
 
       }
@@ -361,9 +364,11 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
       }
       function makebussidebar(){
 //        document.getElementById("businfo").innerHTML="shit";
-        var bushtml = "";
 
+        var bushtml = "";
+        bushtml += '<a href="javascript:closestbus()" id="marker"+i>' + "Get Closest Bus Stop Here"  + '<\/a><br>';
         for (var i=0; i<busMarker.length; i++) {
+
           if (busMarker[i].getVisible()) {
 //              document.write(busMarker[i].title);
             bushtml += '<a href="javascript:myclick1(' + i + ')" id="marker"+i>' + busMarker[i].title  + '<\/a><br>';
@@ -374,6 +379,57 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
         }
 
         document.getElementById("businfo").innerHTML = bushtml;
+
+      }
+
+      function closestbus(){
+      
+          var min_dis = Number.MAX_SAFE_INTEGER;
+          var min_marker = busMarker[0];
+          for (var i=0; i<busMarker.length; i++) {
+
+              if (busMarker[i].getVisible()) {
+    //              document.write(busMarker[i].title);
+
+
+                  if (busdistance[i]<min_dis){
+                      alert(min_dis);
+                      min_dis = busdistance[i];
+                      min_marker = busMarker[i];
+
+                  }
+
+
+              }
+        }
+        alert(min_dis)
+        addminmarker(min_marker);
+
+
+      }
+
+
+      function addminmarker(min_marker){
+        clearOverlays();
+        alert(min_marker.position);
+        // closestBusMarker =[];
+        // var marker = new google.maps.Marker({
+        //    position: min_marker.position,
+        //     lable: labels[labelIndex++ % labels.length],
+        //     map: mapRight,
+        //     icon: 'https://maps.google.com/mapfiles/kml/shapes/parking_lot_maps.png',
+        //     draggable: true,
+        //     });
+        // marker.addListener('click',function(){
+        //
+        //   }
+        // closestBusMarker.push(marker);
+        for (var i = 0; i < busMarker.length; i++ ) {
+            if (busMarker[i] == min_marker) {
+                busMarker[i].setVisible(true);
+            }
+          }
+
 
       }
 
@@ -419,7 +475,7 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
             var resOne= JSON.stringify(res);
 //            alert(resOne);
             busMarker = [];
-
+            busdistance =[];
             for(var i=0;i<=res['location'].length;i++) {
                  var infoWindow=infoWindowRight;
 
@@ -429,42 +485,7 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
                     var blatlng = new google.maps.LatLng(res['location'][i]['coord'][0], res['location'][i]['coord'][1]);
                     // addMarker(blatlng,mapRight)
                     createbusmarker(blatlng,res,i);
-                    // var bmarker = new google.maps.Marker({
-                    //     map: mapRight,
-                    //     position: blatlng,
-                    //     label: labels[labelIndex++ % labels.length],
-                    //     //title: 'ID: '+res['location'][i]['id'] +'Name: '+res['location'][i]['name']+'<br/>'+'Type: '+res['location'][i]['type']+'<br/>'+'Distance: '+res['location'][i]['properties']['distance']+'<br/>',
-                    //     title: res['location'][i]['name'],
-                    //     icon: 'https://maps.google.com/mapfiles/kml/shapes/parking_lot_maps.png',
-                    //     draggable: true,
-                    //
-                    //
-                    //     animation: google.maps.Animation.DROP,
-                    //     //     icon :'http://205.166.161.233/MyRide/css/ico/bus_pointer.svg',
-                    //
-                    //
-                    // });
-                    // busMarker.push(bmarker);
-                    // var name = res['location'][i]['name'];
-                    // var id = res['location'][i]['properties']['STOPPOINT_GLOBAL_ID'];
-                    // var type = res['location'][i]['type'];
-                    // var distance = res['location'][i]['properties']['distance'];
-                    // // bmarker.addListener('click',function () {
-                    // //     var iwContent = "ID: "+id+"<br/>"+ "Name: "+name+'<br/>'+ "Type: "+type+'<br/>'+"Distance: "+distance+"<br/>";
-                    // //      // mapRight.setZoom(8);
-                    // //      infoWindow.setContent(iwContent);
-                    // //      infoWindow.open(mapRight, bmarker);
-                    // // })
-                    // alert(id);
-                    // google.maps.event.addListener(bmarker, 'click', function() {
-                    //     var iwContent = "ID: "+id+"<br/>"+ "Name: "+name+'<br/>'+ "Type: "+type+'<br/>'+"Distance: "+distance+"<br/>";
-                    //      // mapRight.setZoom(8);
-                    //     alert(iwContent);
-                    //      infoWindow.setContent(iwContent);
-                    //      infoWindow.open(mapRight, bmarker);
-                    //
-                    //
-                    // });
+
 
                 }
 
@@ -473,25 +494,9 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
             }
 
 
-            // var blatlng =new google.maps.LatLng(res['location'][0]['coord'][0],res['location'][0]['coord'][1]);
-            // var bmarker = new google.maps.Marker({
-            //     map: mapRight,
-            //     position: blatlng,
-            //     label: labels[labelIndex++ % labels.length],
-            //     icon : 'https://maps.google.com/mapfiles/kml/shapes/parking_lot_maps.png',
-            //
-            //
-            // });
-            // alert(bmarker.label);
-
-
-
 
         });
 
-        // alert("ending")
-        // var tmp = new google.maps.LatLng(-33.91643,151.21050000000002);
-        // addMarker(tmp,mapRight);
     }
     
     
@@ -513,17 +518,12 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
 
         });
         busMarker.push(bmarker);
+
         var name = res['location'][i]['name'];
         var id = res['location'][i]['properties']['STOPPOINT_GLOBAL_ID'];
         var type = res['location'][i]['type'];
         var distance = res['location'][i]['properties']['distance'];
-        // bmarker.addListener('click',function () {
-        //     var iwContent = "ID: "+id+"<br/>"+ "Name: "+name+'<br/>'+ "Type: "+type+'<br/>'+"Distance: "+distance+"<br/>";
-        //      // mapRight.setZoom(8);
-        //      infoWindow.setContent(iwContent);
-        //      infoWindow.open(mapRight, bmarker);
-        // })
-        // alert(id);
+        busdistance.push(distance);
         google.maps.event.addListener(bmarker, 'click', function() {
             var iwContent = "ID: "+id+"<br/>"+ "Name: "+name+'<br/>'+ "Type: "+type+'<br/>'+"Distance: "+distance+"<br/>";
              // mapRight.setZoom(8);
@@ -537,9 +537,21 @@ function createMarke(setMap, latlng, name, place,link,id,local_time,venue){
     }
     function clearOverlays() {
       for (var i = 0; i < busMarker.length; i++ ) {
-        busMarker[i].setMap(null);
+          if (busMarker[i].getVisible()) {
+              busMarker[i].setVisible(false);
+          }
       }
-      busMarker.length = 0;
+
+
+      for (var i = 0; i < closestBusMarker.length; i++ ) {
+          if (closestBusMarker.getVisible()) {
+              closestBusMarker[i].setVisible(false);
+          }
+      }
+
+
+
+
     }
     
     
